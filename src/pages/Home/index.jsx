@@ -3,15 +3,26 @@ import { Header } from '../../components/header'
 import { Link } from 'react-router-dom'
 
 import { useSelector, useDispatch } from 'react-redux'
-import { deleteAddress } from '../../redux/user/slice'
+import { deleteAddress, fetchUsers, fetchUserById } from '../../redux/user/slice'
 
 export function Home() {
-  const { user } = useSelector((rootReducer) => rootReducer.user)
+  const { user, users, loading } = useSelector((rootReducer) => rootReducer.user)
+  const dispatch = useDispatch();
 
 
   function handleDeleteAddress(){
     dispatch(deleteAddress())
     alert("Endereço deletado com sucesso!")
+  }
+
+  function handleFetchUsers(){
+    dispatch(fetchUsers())
+  }
+
+  function handleFetchUserById(){
+    const userId = 8;
+
+    dispatch(fetchUserById(userId))
   }
 
   return (
@@ -41,16 +52,34 @@ export function Home() {
               <span>Email: {user.email}</span>
             )}
 
+
             { user && user.address && (
               <>
                 <strong className={styles.addressLabel}>Endereço atual:</strong>
                 <div className={styles.address}>
-                  <p>{user.address.location}, nº {user.address.number}</p>
+                  <p>{user.address.location}, n {user.address.number}</p>
                   
                   <button onClick={handleDeleteAddress}>Deletar endereço</button>
                 </div>
               </>
             )}
+
+            <hr/>
+            <br/>
+
+            <h2>Lista de usuários</h2>
+            <button onClick={handleFetchUsers}>Buscar usuários</button>
+            <button onClick={handleFetchUserById}>Buscar usuário com ID</button>
+            <br/>
+
+
+            {loading && <strong>Carregando usuários...</strong> }
+
+            {!loading && users.map( (user) => (
+              <div key={user.id}>
+                <p>ID: {user.id} | {user.name}</p>
+              </div>
+            ))}
 
           </div>
 
