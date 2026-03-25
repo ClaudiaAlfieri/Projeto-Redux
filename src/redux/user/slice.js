@@ -2,6 +2,8 @@ import {createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   user: null,
+  users: [],
+  loading: false,
 }
 
 export const userSlice = createSlice({
@@ -9,7 +11,6 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     createUser: (state, action) => {
-
       return {
         ...state,
         user:{
@@ -18,54 +19,85 @@ export const userSlice = createSlice({
           address: null,
         }
       }
+
     },
     logoutUser: (state) => {
+
       return {
         ...state,
         user: null,
       }
+
     },
+    addAddress: (state, action) => {
 
-    addAddress: (state, action) =>{
+      if(action.payload.location === '' || action.payload.number === ''){
+        alert("Preencha todos os campos")
+        return { ...state }
+      }
 
-        if(action.payload.location == '' || action.payload.number == ''){
-          alert("Preencha todos os campo")
-          return {...state};
+      if(state.user === null){
+        alert("Faça o login para cadastrar um endereço")
+
+        return { ...state }
+      }
+
+
+      alert("Dados atualizados!")
+      
+      return{
+        ...state,
+        user:{
+          ...state.user,
+          address:{
+            location: action.payload.location,
+            number: action.payload.number,
+          }
         }
+      }
 
-        if(state.user === null){
-            alert("Faça login para cadastrar um endereço!")
-            return {...state};
+
+    },
+    deleteAddress: (state) => {
+      return{
+        ...state,
+        user:{
+          ...state.user,
+          address: null,
         }
-        alert("Dados atualizados com sucesso!")
+      }
+    },
+    fetchUsers: (state) => {
+      state.loading = true;
+    },
+    fetchUsersSuccess: (state, action) => {
+      console.log(action.payload);
+      state.users = action.payload;
+      state.loading = false;
 
-        return {
-            ...state,
-            user: {
-                ...state.user,
-                address: {
-                    location: action.payload.location,
-                    number: action.payload.number,
-                }
-            }
-        }        
-     },
-
-      deleteAddress: (state) => {
-            return {
-                ...state,
-                user:{
-                    ...state.user,
-                    address: null
-                }          
-
-        }
-
+    },
+    fetchUsersFailure: (state, action) => {
+      console.log("CAIU NA FAILURE")
+      console.log(action.payload);
+      state.loading = false;
+    },
+    fetchUserById: (state) => {
+      console.log("CHAMOU NO SLICE")
+    },
+    fetchUserByIdSuccess: (state, action) => {
+      console.log("User do id")
+      console.log(action.payload)
+    },
+    fetchUserByIdFailure: (state) => {
+      console.log("DEU ERRO NO fetchByID")
     }
-  }
+  },
 })
 
-export const { createUser, logoutUser, addAddress, deleteAddress } = userSlice.actions;
+export const { createUser, logoutUser, addAddress, deleteAddress, fetchUsers,
+  fetchUsersSuccess, fetchUsersFailure, fetchUserById, fetchUserByIdSuccess, 
+  fetchUserByIdFailure
+} = userSlice.actions;
 
 export default userSlice.reducer;
 
